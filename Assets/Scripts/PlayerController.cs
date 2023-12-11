@@ -52,7 +52,7 @@ public class PlayerController : MonoBehaviour
     private Vector3 stanceCapsuleVelocity;
     private float stanceCapsuleHeightVelocity;
 
-    private bool isSprinting;
+    public bool isSprinting;
 
     private Vector3 newMovementSpeed;
     private Vector3 newMovementSpeedVelocity;
