@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641275, b: 0.5748171, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -470,11 +470,16 @@ MonoBehaviour:
     crouchSpeedEffector: 0.6
     proneSpeedEffector: 0.2
     fallingSpeedEffector: 0.4
+    isGroundedRadius: 0.1
+    isFallingSpeed: 0
   viewClampXMin: -70
   viewClampXMax: 80
   playerMask:
     serializedVersion: 2
     m_Bits: 55
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 0
   gravityAmount: 0.03
   gravityMin: -3
   jumpingForce: {x: 0, y: 0, z: 0}
@@ -490,8 +495,11 @@ MonoBehaviour:
     cameraHeight: -0.5
     stanceCollider: {fileID: 743000998}
   stanceHeightErrorMargin: 0.05
+  isSprinting: 0
   currentWeapon: {fileID: 136106592}
   weaponAnimationSpeed: 1
+  isGrounded: 0
+  isFalling: 0
 --- !u!136 &743001003
 CapsuleCollider:
   m_ObjectHideFlags: 0

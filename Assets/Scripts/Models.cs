@@ -43,6 +43,10 @@ public static class Models
         public float crouchSpeedEffector;
         public float proneSpeedEffector;
         public float fallingSpeedEffector;
+
+        [Header("Is Grounded / Falling")]
+        public float isGroundedRadius;
+        public float isFallingSpeed;
     }
 
     [Serializable]
