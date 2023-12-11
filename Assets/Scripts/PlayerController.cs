@@ -60,6 +60,8 @@ public class PlayerController : MonoBehaviour
     [Header("Weapon")]
     public WeaponController currentWeapon;
 
+    public float weaponAnimationSpeed = 1;
+
     private void Awake()
     {
         defaultInput = new DefaultInput();
@@ -138,6 +140,13 @@ public class PlayerController : MonoBehaviour
         else
         {
             playerSettings.speedEffector = 1;
+        }
+
+        weaponAnimationSpeed = characController.velocity.magnitude / (playerSettings.walkingForwardSpeed * playerSettings.speedEffector);
+
+        if (weaponAnimationSpeed > 1)
+        {
+            weaponAnimationSpeed = 1;
         }
 
         verticalSpeed *= playerSettings.speedEffector;
