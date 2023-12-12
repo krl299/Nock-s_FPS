@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEditor.Build;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine;
@@ -20,6 +21,7 @@ public class PlayerController : MonoBehaviour
 
     [Header("References")]
     public Transform cameraHolder;
+    public Transform camera;
     public Transform feetTransform;
 
     [Header("Settings")]
@@ -66,6 +68,20 @@ public class PlayerController : MonoBehaviour
     [HideInInspector]
     public bool isFalling;
 
+    [Header("Leaning")]
+    public Transform leanPivot;
+    private float currentLean;
+    private float targetLean;
+    public float leanAngle;
+    public float leanSmoothing;
+    private float leanVelocity;
+
+    private bool isLeaningLeft;
+    private bool isLeaningRight;
+
+    [Header("Aiming In")]
+    public bool isAimingIn;
+
     #region - Awake -
     private void Awake()
     {
@@ -78,6 +94,15 @@ public class PlayerController : MonoBehaviour
         defaultInput.Character.Prone.performed += e => Prone();
         defaultInput.Character.Sprint.performed += e => ToggleSprint();
         defaultInput.Character.SprintReleased.canceled += e => StopSprint();
+
+        defaultInput.Character.LeanLeftPressed.performed += e => isLeaningLeft = true;
+        defaultInput.Character.LeanLeftReleased.performed += e => isLeaningLeft = false;
+
+        defaultInput.Character.LeanRightPressed.performed += e => isLeaningRight = true;
+        defaultInput.Character.LeanRightReleased.performed += e => isLeaningRight = false;
+
+        defaultInput.Weapon.Fire2Pressed.performed += e => AimingInPressed();
+        defaultInput.Weapon.Fire2Released.performed += e => AimingInReleased();
 
         defaultInput.Enable();
 
@@ -103,7 +128,30 @@ public class PlayerController : MonoBehaviour
         CalculateMovement();
         CalculateJump();
         CalculateStance();
+        CalculateLeaning();
+        CalculateAimingIn();
 
+    }
+
+    #endregion
+
+    #region - Aiming In -
+
+    private void AimingInPressed()
+    {
+        isAimingIn = true;
+    }
+
+    private void AimingInReleased()
+    {
+        isAimingIn = false;
+    }
+
+    private void CalculateAimingIn()
+    {
+        if (!currentWeapon)
+            return;
+        currentWeapon.isAimingIn = isAimingIn;
     }
 
     #endregion
@@ -125,11 +173,11 @@ public class PlayerController : MonoBehaviour
     #region - Movement / View -
     private void CalculateView()
     {
-        newCharacterRotation.y += playerSettings.viewYSensitivity * 
+        newCharacterRotation.y += (isAimingIn ? (playerSettings.viewXSensitivity * playerSettings.aimingSensitivityEffector) : playerSettings.viewXSensitivity) * 
             (playerSettings.viewXInverted ? -viewInput.x : viewInput.x) * Time.deltaTime;
         transform.rotation = Quaternion.Euler(newCharacterRotation);
 
-        newCameraRotation.x += playerSettings.viewXSensitivity * 
+        newCameraRotation.x += (isAimingIn ? (playerSettings.viewXSensitivity * playerSettings.aimingSensitivityEffector) : playerSettings.viewXSensitivity) * 
             (playerSettings.viewYInverted ? viewInput.y : -viewInput.y) * Time.deltaTime;
         newCameraRotation.x = Mathf.Clamp(newCameraRotation.x, viewClampXMin, viewClampXMax);
 
@@ -164,6 +212,10 @@ public class PlayerController : MonoBehaviour
         {
             playerSettings.speedEffector = playerSettings.proneSpeedEffector;
         }
+        else if (isAimingIn)
+        {
+            playerSettings.speedEffector = playerSettings.aimingSpeedEffector;
+        }
         else
         {
             playerSettings.speedEffector = 1;
@@ -196,6 +248,30 @@ public class PlayerController : MonoBehaviour
         movementSpeed += jumpingForce * Time.deltaTime;
 
         characController.Move(movementSpeed);
+    }
+
+    #endregion
+
+    #region - Leaning -
+
+    private void CalculateLeaning()
+    {
+        if (isLeaningLeft)
+        {
+            targetLean = leanAngle;
+        }
+        else if (isLeaningRight)
+        {
+            targetLean = -leanAngle;
+        }
+        else
+        {
+            targetLean = 0;
+        }
+
+        currentLean = Mathf.SmoothDamp(currentLean, targetLean, ref leanVelocity, leanSmoothing);
+
+        leanPivot.localRotation = Quaternion.Euler(0, 0, currentLean);
     }
 
     #endregion

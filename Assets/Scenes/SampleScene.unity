@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657874, g: 0.49641275, b: 0.5748171, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -247,10 +247,14 @@ MonoBehaviour:
   weaponSwayObject: {fileID: 506359957}
   swayAmountA: 1
   swayAmountB: 2
-  swayScale: 600
+  swayScale: 5000
   swayLerpSped: 14
   swayTime: 0
   swayPosition: {x: 0, y: 0, z: 0}
+  sightTarget: {fileID: 1074477405}
+  sightOffset: 0.1
+  aimingInTime: 0.05
+  isAimingIn: 0
 --- !u!1001 &170231370
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -485,6 +489,38 @@ Transform:
   m_Children:
   - {fileID: 1818441839}
   m_Father: {fileID: 136106591}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &510656830
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 510656831}
+  m_Layer: 6
+  m_Name: LeanPivot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &510656831
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 510656830}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.23, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children:
+  - {fileID: 1158984860}
+  m_Father: {fileID: 743001001}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &524580637 stripped
 Transform:
@@ -865,8 +901,8 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 1158984860}
   - {fileID: 808754226}
+  - {fileID: 510656831}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &743001002
@@ -884,10 +920,12 @@ MonoBehaviour:
   moveInput: {x: 0, y: 0}
   viewInput: {x: 0, y: 0}
   cameraHolder: {fileID: 1158984860}
+  camera: {fileID: 963194228}
   feetTransform: {fileID: 808754226}
   playerSettings:
     viewXSensitivity: 20
     viewYSensitivity: 20
+    aimingSensitivityEffector: 0.5
     viewXInverted: 0
     viewYInverted: 0
     sprintingHold: 0
@@ -904,6 +942,7 @@ MonoBehaviour:
     crouchSpeedEffector: 0.6
     proneSpeedEffector: 0.2
     fallingSpeedEffector: 0.4
+    aimingSpeedEffector: 1
     isGroundedRadius: 0.1
     isFallingSpeed: 0
   viewClampXMin: -70
@@ -914,7 +953,7 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 55
-  gravityAmount: 0.03
+  gravityAmount: 0.01
   gravityMin: -3
   jumpingForce: {x: 0, y: 0, z: 0}
   playerStance: 0
@@ -934,6 +973,10 @@ MonoBehaviour:
   weaponAnimationSpeed: 1
   isGrounded: 0
   isFalling: 0
+  leanPivot: {fileID: 510656831}
+  leanAngle: 30
+  leanSmoothing: 0.2
+  isAimingIn: 0
 --- !u!136 &743001003
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -1728,6 +1771,37 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cb825447b7c1ef442a049949c3f95ba7, type: 3}
+--- !u!1 &1074477404
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1074477405}
+  m_Layer: 6
+  m_Name: SightTarget
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1074477405
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1074477404}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.05, z: -0.0766}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1818441839}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1103731246 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4519716788627816, guid: ee329c3cd08e58645834d20702d7f6c6, type: 3}
@@ -1823,14 +1897,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1158984859}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.8, z: 0}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 1.0300001, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 963194228}
   - {fileID: 136106591}
-  m_Father: {fileID: 743001001}
+  m_Father: {fileID: 510656831}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &1244270693 stripped
 Transform:
@@ -1924,6 +1998,7 @@ Transform:
   - {fileID: 477176169}
   - {fileID: 429248460}
   - {fileID: 2002777412}
+  - {fileID: 1074477405}
   m_Father: {fileID: 506359957}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1822078921
