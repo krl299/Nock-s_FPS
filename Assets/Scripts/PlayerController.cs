@@ -97,6 +97,8 @@ public class PlayerController : MonoBehaviour
     #region - Update -
     private void Update()
     {
+        SetIsGrounded();
+        SetIsFalling();
         CalculateView();
         CalculateMovement();
         CalculateJump();
@@ -115,7 +117,7 @@ public class PlayerController : MonoBehaviour
 
     private void SetIsFalling()
     {
-        if (!isGrounded && characController.velocity.magnitude > playerSettings.isFallingSpeed);
+        isFalling = (!isGrounded && characController.velocity.magnitude > playerSettings.isFallingSpeed);
     }
 
     #endregion
@@ -150,7 +152,7 @@ public class PlayerController : MonoBehaviour
             horizontalSpeed = playerSettings.runningStrafeSpeed;
         }
 
-        if (!characController.isGrounded)
+        if (!isGrounded)
         {
             playerSettings.speedEffector = playerSettings.fallingSpeedEffector;
         }
@@ -180,14 +182,14 @@ public class PlayerController : MonoBehaviour
         newMovementSpeed = Vector3.SmoothDamp(newMovementSpeed,
             new Vector3(horizontalSpeed * moveInput.x * Time.deltaTime,
                 0, verticalSpeed * moveInput.y * Time.deltaTime),
-            ref newMovementSpeedVelocity, characController.isGrounded ? playerSettings.movementSmoothing :
+            ref newMovementSpeedVelocity, isGrounded ? playerSettings.movementSmoothing :
             playerSettings.fallingSmoothing);
 
         var movementSpeed = transform.TransformDirection(newMovementSpeed);
 
         if (playerGravity > gravityMin)
             playerGravity -= gravityAmount * Time.deltaTime;
-        if (playerGravity < -0.1f && characController.isGrounded)
+        if (playerGravity < -0.1f && isGrounded)
             playerGravity = -0.1f;
 
         movementSpeed.y += playerGravity;
@@ -208,7 +210,7 @@ public class PlayerController : MonoBehaviour
 
     private void Jump()
     {
-        if (!characController.isGrounded)
+        if (!isGrounded)
             return;
         if (playerStance == PlayerStance.Crouch || playerStance == PlayerStance.Prone)
         {
@@ -219,7 +221,7 @@ public class PlayerController : MonoBehaviour
         }
         jumpingForce = Vector3.up * playerSettings.jumpingHeight;
         playerGravity = 0;
-
+        currentWeapon.TriggerJump();
     }
 
     #endregion

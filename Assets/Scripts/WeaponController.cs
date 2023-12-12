@@ -27,6 +27,21 @@ public class WeaponController : MonoBehaviour
     Vector3 targetWeaponMovementRotation;
     Vector3 targetWeaponMovementRotationVelocity;
 
+    private bool isGroundedTrigger;
+    public float fallingDelay;
+
+    [Header("Weapon Sway")]
+    public Transform weaponSwayObject;
+
+    public float swayAmountA = 1;
+    public float swayAmountB = 2;
+    public float swayScale = 600;
+    public float swayLerpSped = 14;
+
+    public float swayTime;
+    public Vector3 swayPosition;
+
+
     private void Start()
     {
         newWeaponRotation = transform.localRotation.eulerAngles;
@@ -47,6 +62,13 @@ public class WeaponController : MonoBehaviour
 
         CalculateWeaponRotation();
         SetWeaponAnimations();
+        CalculateWeaponSway();
+    }
+
+    public void TriggerJump()
+    {
+        isGroundedTrigger = false;
+        weaponAnimator.SetTrigger("Jump");
     }
 
     private void CalculateWeaponRotation()
@@ -82,6 +104,37 @@ public class WeaponController : MonoBehaviour
 
     private void SetWeaponAnimations()
     {
+        if (isGroundedTrigger)
+            fallingDelay = 0;
+        else
+            fallingDelay += Time.deltaTime;
+
+        if (player.isGrounded && !isGroundedTrigger && fallingDelay > 0.1)
+        {
+            weaponAnimator.SetTrigger("Landing");
+            isGroundedTrigger = true;
+        }
+        else if (!player.isGrounded && isGroundedTrigger)
+        {
+            weaponAnimator.SetTrigger("Falling");
+            isGroundedTrigger = false;
+        }
+
         weaponAnimator.SetBool("isSprinting", player.isSprinting);
+    }
+
+    private void CalculateWeaponSway()
+    {
+        var targetposition = LissajousCurve(swayTime, swayAmountA, swayAmountB) / swayScale;
+
+        swayPosition = Vector3.Lerp(swayPosition, targetposition, Time.smoothDeltaTime * swayLerpSped);
+        swayTime += Time.deltaTime;
+
+        weaponSwayObject.localPosition = swayPosition;
+    }
+
+    private Vector3 LissajousCurve(float Time, float A, float B)
+    {
+        return new Vector3(Mathf.Sin(Time), A * Mathf.Sin(B * Time + Mathf.PI));
     }
 }
