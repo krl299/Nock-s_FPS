@@ -27,7 +27,7 @@ public class PlayerController : MonoBehaviour
     [Header("Settings")]
     public PlayerSettingsModel playerSettings;
     public float viewClampXMin = -70;
-    public float viewClampXMax  = 80;
+    public float viewClampXMax = 80;
     public LayerMask playerMask;
     public LayerMask groundMask;
 
@@ -58,6 +58,10 @@ public class PlayerController : MonoBehaviour
 
     private Vector3 newMovementSpeed;
     private Vector3 newMovementSpeedVelocity;
+
+    private const float StaminaDecreasePerFrame = 5.0f;
+    private const float StaminaIncreasePerFrame = 5.0f;
+    private const float StaminaTimeToRegen = 3.0f;
 
     [Header("Weapon")]
     public WeaponController currentWeapon;
@@ -173,11 +177,11 @@ public class PlayerController : MonoBehaviour
     #region - Movement / View -
     private void CalculateView()
     {
-        newCharacterRotation.y += (isAimingIn ? (playerSettings.viewXSensitivity * playerSettings.aimingSensitivityEffector) : playerSettings.viewXSensitivity) * 
+        newCharacterRotation.y += (isAimingIn ? (playerSettings.viewXSensitivity * playerSettings.aimingSensitivityEffector) : playerSettings.viewXSensitivity) *
             (playerSettings.viewXInverted ? -viewInput.x : viewInput.x) * Time.deltaTime;
         transform.rotation = Quaternion.Euler(newCharacterRotation);
 
-        newCameraRotation.x += (isAimingIn ? (playerSettings.viewXSensitivity * playerSettings.aimingSensitivityEffector) : playerSettings.viewXSensitivity) * 
+        newCameraRotation.x += (isAimingIn ? (playerSettings.viewXSensitivity * playerSettings.aimingSensitivityEffector) : playerSettings.viewXSensitivity) *
             (playerSettings.viewYInverted ? viewInput.y : -viewInput.y) * Time.deltaTime;
         newCameraRotation.x = Mathf.Clamp(newCameraRotation.x, viewClampXMin, viewClampXMax);
 
@@ -372,7 +376,7 @@ public class PlayerController : MonoBehaviour
     private void StopSprint()
     {
         if (playerSettings.sprintingHold)
-            isSprinting = false;   
+            isSprinting = false;
     }
 
     #endregion

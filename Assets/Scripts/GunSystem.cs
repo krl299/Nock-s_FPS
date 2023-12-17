@@ -24,7 +24,7 @@ public class GunSystem : MonoBehaviour
     //Graphics
     public GameObject muzzleFlash, bulletHoleGraphic;
     //public CamShake camShake;
-    public float camShakeMagnitude, camShakeDuration;
+    //public float camShakeMagnitude, camShakeDuration;
     public TextMeshProUGUI text;
 
     private void Awake()
@@ -32,6 +32,7 @@ public class GunSystem : MonoBehaviour
         bulletsLeft = magazineSize;
         readyToShoot = true;
     }
+
     private void Update()
     {
         MyInput();
@@ -39,6 +40,7 @@ public class GunSystem : MonoBehaviour
         //SetText
         text.SetText(bulletsLeft + " / " + magazineSize);
     }
+
     private void MyInput()
     {
         if (allowButtonHold) shooting = Input.GetKey(KeyCode.Mouse0);
@@ -53,6 +55,7 @@ public class GunSystem : MonoBehaviour
             Shoot();
         }
     }
+
     private void Shoot()
     {
         readyToShoot = false;
@@ -78,7 +81,7 @@ public class GunSystem : MonoBehaviour
         //camShake.Shake(camShakeDuration, camShakeMagnitude);
 
         //Graphics
-        Instantiate(bulletHoleGraphic, rayHit.point, Quaternion.Euler(0, 180, 0));
+        Instantiate(bulletHoleGraphic, rayHit.point, Quaternion.LookRotation(rayHit.normal));
         Instantiate(muzzleFlash, attackPoint.position, Quaternion.identity);
 
         bulletsLeft--;
@@ -89,15 +92,18 @@ public class GunSystem : MonoBehaviour
         if (bulletsShot > 0 && bulletsLeft > 0)
             Invoke("Shoot", timeBetweenShots);
     }
+
     private void ResetShot()
     {
         readyToShoot = true;
     }
+
     private void Reload()
     {
         reloading = true;
         Invoke("ReloadFinished", reloadTime);
     }
+
     private void ReloadFinished()
     {
         bulletsLeft = magazineSize;

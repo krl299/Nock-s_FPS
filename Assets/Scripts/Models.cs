@@ -35,6 +35,11 @@ public static class Models
         public float runningForwardSpeed;
         public float runningStrafeSpeed;
 
+        [Header("Stamina Settings")]
+        public float Stamina = 100.0f;
+        public float MaxStamina = 100.0f;
+        public float StaminaRegenTimer = 0.0f;
+
         [Header("Jump Settings")]
         public float jumpingHeight;
         public float jumpingFalloff;
